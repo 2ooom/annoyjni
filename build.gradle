@@ -1,0 +1,70 @@
+apply plugin: 'java'
+apply plugin: 'application'
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+    }
+}
+ 
+apply plugin: 'com.github.johnrengelman.shadow'
+
+mainClassName = 'com.criteo.annoy.HelloAnnoy'
+
+repositories {
+   jcenter()
+}
+
+configurations {
+    javacpp
+}
+ext {
+    artifactId = "annoy-jni"
+    groupId = "com.criteo.annoy"
+}
+
+dependencies {
+   javacpp group: 'org.bytedeco', name: 'javacpp', version: '1.4.4'
+   compile configurations.javacpp.dependencies
+}
+
+task hello() << {
+    def a = sourceSets.main.java
+    a.properties.each { println "${it.key} -> ${it.value}" }
+}
+
+def AnnoyLibConfig= "AnnoyLongLibraryConfig"
+
+task compileAnnoyCppConfig(type: JavaCompile) {
+    source = fileTree(dir: 'src', include: "**/${AnnoyLibConfig}.java")
+    destinationDir = file(sourceSets.main.java.outputDir)
+    classpath = files([configurations.javacpp.asPath])
+}
+
+task generateJniClass(type: JavaExec, dependsOn: 'compileAnnoyCppConfig') {
+    classpath = files([configurations.javacpp.asPath])
+    main = 'org.bytedeco.javacpp.tools.Builder'
+    args = [
+        '-classpath', sourceSets.main.java.outputDir,
+        '-d', 'src/main/java/',
+        "com.criteo.annoy.${AnnoyLibConfig}"
+    ]
+}
+
+
+task copyCpp(type: Copy) {
+    from "src/main/cpp/"
+    include "**"
+    into file("${sourceSets.main.java.outputDir}/com/criteo/annoy/")
+}
+
+task generateAnnoyLibrary(type: JavaExec, dependsOn: ['compileJava', 'copyCpp']) {
+    classpath = files([configurations.javacpp.asPath])
+    main = 'org.bytedeco.javacpp.tools.Builder'
+    args = [
+        '-classpath', sourceSets.main.java.outputDir,
+        'com.criteo.annoy.AnnoyLongLibrary'
+    ]
+}
