@@ -6,7 +6,7 @@ import java.nio.*;
 import org.bytedeco.javacpp.*;
 import org.bytedeco.javacpp.annotation.*;
 
-public class AnnoyLongLibrary extends com.criteo.annoy.AnnoyLongLibraryConfig {
+public class AnnoyLib extends com.criteo.annoy.AnnoyLibConfig {
     static { Loader.load(); }
 
 // Parsed from annoyint.h

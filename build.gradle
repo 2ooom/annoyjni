@@ -35,7 +35,7 @@ task hello() << {
     a.properties.each { println "${it.key} -> ${it.value}" }
 }
 
-def AnnoyLibConfig= "AnnoyLongLibraryConfig"
+def AnnoyLibConfig= "AnnoyLibConfig"
 
 task compileAnnoyCppConfig(type: JavaCompile) {
     source = fileTree(dir: 'src', include: "**/${AnnoyLibConfig}.java")
@@ -65,6 +65,6 @@ task generateAnnoyLibrary(type: JavaExec, dependsOn: ['generateJniClass', 'compi
     args = [
         '-classpath', sourceSets.main.java.outputDir,
         '-nodelete',
-        'com.criteo.annoy.AnnoyLongLibrary'
+        'com.criteo.annoy.AnnoyLib'
     ]
 }
