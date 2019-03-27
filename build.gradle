@@ -65,6 +65,7 @@ task generateAnnoyLibrary(type: JavaExec, dependsOn: ['compileJava', 'copyCpp'])
     main = 'org.bytedeco.javacpp.tools.Builder'
     args = [
         '-classpath', sourceSets.main.java.outputDir,
+        '-nodelete',
         'com.criteo.annoy.AnnoyLongLibrary'
     ]
 }
