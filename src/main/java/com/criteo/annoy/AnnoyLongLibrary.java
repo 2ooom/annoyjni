@@ -9,7 +9,7 @@ import org.bytedeco.javacpp.annotation.*;
 public class AnnoyLongLibrary extends com.criteo.annoy.AnnoyLongLibraryConfig {
     static { Loader.load(); }
 
-// Parsed from src/main/cpp/annoyint.h
+// Parsed from annoyint.h
 
 // #include "annoylib.h"
 // #include "kissrandom.h"

@@ -43,7 +43,13 @@ task compileAnnoyCppConfig(type: JavaCompile) {
     classpath = files([configurations.javacpp.asPath])
 }
 
-task generateJniClass(type: JavaExec, dependsOn: 'compileAnnoyCppConfig') {
+task copyCpp(type: Copy) {
+    from "src/main/cpp/"
+    include "**"
+    into file("${sourceSets.main.java.outputDir}/com/criteo/annoy/")
+}
+
+task generateJniClass(type: JavaExec, dependsOn: ['compileAnnoyCppConfig', 'copyCpp']) {
     classpath = files([configurations.javacpp.asPath])
     main = 'org.bytedeco.javacpp.tools.Builder'
     args = [
@@ -53,14 +59,7 @@ task generateJniClass(type: JavaExec, dependsOn: 'compileAnnoyCppConfig') {
     ]
 }
 
-
-task copyCpp(type: Copy) {
-    from "src/main/cpp/"
-    include "**"
-    into file("${sourceSets.main.java.outputDir}/com/criteo/annoy/")
-}
-
-task generateAnnoyLibrary(type: JavaExec, dependsOn: ['compileJava', 'copyCpp']) {
+task generateAnnoyLibrary(type: JavaExec, dependsOn: ['generateJniClass', 'compileJava']) {
     classpath = files([configurations.javacpp.asPath])
     main = 'org.bytedeco.javacpp.tools.Builder'
     args = [

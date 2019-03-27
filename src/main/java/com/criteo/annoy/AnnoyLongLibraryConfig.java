@@ -6,15 +6,7 @@ import org.bytedeco.javacpp.tools.*;
 
 @Properties(
         value = @Platform(
-                //includepath = {"/Users/d.parfenchik/Dev/jcpptest/"},
-                //preloadpath = {"/path/to/deps/"},
-                //linkpath = {"/path/to/lib/"},
-                //include = {"annoylong.h"} //src/main/cpp/annoylong.h
-                include = {"annoyint.h"}
-                //include = {"src/main/cpp/annoyint.h"}
-            
-                //preload = {"DependentLib"},
-                //link = {"NativeLibrary"}
+                include = {"annoyint.h"} // "src/main/cpp/annoyint.h"
         ),
         target = "com.criteo.annoy",
         global = "com.criteo.annoy.AnnoyLongLibrary"
