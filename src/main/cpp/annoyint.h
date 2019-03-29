@@ -3,19 +3,19 @@
 
 extern "C" {
 long createAngular(int f) {
-  return (long)new AnnoyIndex<long, float, Angular, Kiss64Random>(f);
+  return (long)new AnnoyIndex<int32_t, float, Angular, Kiss64Random>(f);
 }
 
 long createDotProduct(int f) {
-  return (long)new AnnoyIndex<long, float, DotProduct, Kiss64Random>(f);
+  return (long)new AnnoyIndex<int32_t, float, DotProduct, Kiss64Random>(f);
 }
 
 long createEuclidean(int f) {
-  return (long)new AnnoyIndex<long, float, Euclidean, Kiss64Random>(f);
+  return (long)new AnnoyIndex<int32_t, float, Euclidean, Kiss64Random>(f);
 }
 
 long createManhattan(int f) {
-  return (long)new AnnoyIndex<long, float, Manhattan, Kiss64Random>(f);
+  return (long)new AnnoyIndex<int32_t, float, Manhattan, Kiss64Random>(f);
 }
 
 long createHamming(int f) {
