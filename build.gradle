@@ -26,8 +26,13 @@ ext {
 }
 
 dependencies {
-   javacpp group: 'org.bytedeco', name: 'javacpp', version: '1.4.4'
-   compile configurations.javacpp.dependencies
+    javacpp group: 'org.bytedeco', name: 'javacpp', version: '1.4.4'
+    compile configurations.javacpp.dependencies
+    testCompile 'junit:junit:4.12'
+
+}
+test {
+    useJUnitPlatform()
 }
 
 task hello() << {
@@ -65,6 +70,7 @@ task generateAnnoyLibrary(type: JavaExec, dependsOn: ['generateJniClass', 'compi
     args = [
         '-classpath', sourceSets.main.java.outputDir,
         '-nodelete',
+        //'-nogenerate',
         'com.criteo.annoy.AnnoyLib'
     ]
 }

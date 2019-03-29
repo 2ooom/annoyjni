@@ -6,7 +6,8 @@ import org.bytedeco.javacpp.tools.*;
 
 @Properties(
         value = @Platform(
-                include = {"annoyint.h"} // "src/main/cpp/annoyint.h"
+                include = {"annoyint.h"} // "src/main/cpp/annoyint.h",
+                //link = {"/Users/d.parfenchik/Dev/annoyjni/build/classes/java/main/com/criteo/annoy/macosx-x86_64/libjniAnnoyLib.dylib"}
         ),
         target = "com.criteo.annoy",
         global = "com.criteo.annoy.AnnoyLib"
