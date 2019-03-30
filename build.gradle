@@ -31,19 +31,17 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
 }
-test {
-    useJUnitPlatform()
-}
 
 task hello() << {
-    def a = sourceSets.main.java
+    def a = test.classpath//sourceSets.main.java
     a.properties.each { println "${it.key} -> ${it.value}" }
 }
 
-def AnnoyLibConfig= "AnnoyLibConfig"
+def AnnoyLibConfigClass= "AnnoyLibConfig"
+def AnnoyLibClass= "AnnoyLib"
 
-task compileAnnoyCppConfig(type: JavaCompile) {
-    source = fileTree(dir: 'src', include: "**/${AnnoyLibConfig}.java")
+task compileAnnoyConfig(type: JavaCompile) {
+    source = fileTree(dir: 'src', include: "**/${AnnoyLibConfigClass}.java")
     destinationDir = file(sourceSets.main.java.outputDir)
     classpath = files([configurations.javacpp.asPath])
 }
@@ -54,23 +52,30 @@ task copyCpp(type: Copy) {
     into file("${sourceSets.main.java.outputDir}/com/criteo/annoy/")
 }
 
-task generateJniClass(type: JavaExec, dependsOn: ['compileAnnoyCppConfig', 'copyCpp']) {
+task generateJniClass(type: JavaExec, dependsOn: ['compileAnnoyConfig', 'copyCpp']) {
     classpath = files([configurations.javacpp.asPath])
     main = 'org.bytedeco.javacpp.tools.Builder'
     args = [
         '-classpath', sourceSets.main.java.outputDir,
         '-d', 'src/main/java/',
-        "com.criteo.annoy.${AnnoyLibConfig}"
+        "com.criteo.annoy.${AnnoyLibConfigClass}"
     ]
 }
 
-task generateAnnoyLibrary(type: JavaExec, dependsOn: ['generateJniClass', 'compileJava']) {
+task compileAnnoyLib(type: JavaCompile) {
+    source = fileTree(dir: 'src', include: ["**/${AnnoyLibClass}.java", "**/${AnnoyLibConfigClass}.java"])
+    destinationDir = file(sourceSets.main.java.outputDir)
+    classpath = files([configurations.javacpp.asPath])
+}
+
+task generateAnnoyLibrary(type: JavaExec, dependsOn: ['generateJniClass', 'compileAnnoyLib']) {
     classpath = files([configurations.javacpp.asPath])
     main = 'org.bytedeco.javacpp.tools.Builder'
     args = [
         '-classpath', sourceSets.main.java.outputDir,
         '-nodelete',
-        //'-nogenerate',
-        'com.criteo.annoy.AnnoyLib'
+        "com.criteo.annoy.${AnnoyLibClass}"
     ]
 }
+compileJava.dependsOn generateAnnoyLibrary
+compileTestJava.dependsOn generateAnnoyLibrary
