@@ -35,6 +35,7 @@ public class HelloAnnoy {
 
         System.out.println("Nb Items in index: " + index.getNItems());
         System.out.println("Saved:             " + index.save(indexPath));
+        index.unload();
         System.out.println("Reading from:      " + indexPath);
         System.out.println("Loaded:            " + index.load(indexPath, ids));
         System.out.println("Nb Items in index: " + index.getNItems());

@@ -38,6 +38,11 @@ public class AnnoyIndex {
         return getNItems();
     }
 
+    public void unload() {
+        AnnoyLib.unload(pointer);
+        indexToId = null;
+    }
+
     public int getNItems() {
         return AnnoyLib.getNItems(pointer);
     }
