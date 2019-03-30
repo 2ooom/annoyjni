@@ -1,35 +1,73 @@
 package com.criteo.annoy;
 
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class AnnoyLibTests {
 
+    private static float delta = 0.00001f;
+
     @Test
-    public void createEuclidianIndexWithOneItem() {
+    public void createIndicesOfEachTypeSaveAndLoad() throws IOException {
+        //System.out.println(Paths.get(getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).toString());
+        int dimension = 100;
+        int nbItems = 123;
+        int nbTrees = 32;
+        float seedValue = 0.5f;
 
-        assertEquals(42, 42);/*
-        long index = AnnoyLib.createAngular(100);
+        long[] indices = new long[]{
+            AnnoyLib.createAngular(dimension),
+            AnnoyLib.createEuclidean(dimension),
+            AnnoyLib.createDotProduct(dimension),
+            //AnnoyLib.createHamming(dimension),
+            AnnoyLib.createDotProduct(dimension),
+        };
 
-        int nbItems = AnnoyLib.getNItems(index);
-        assertEquals(0, nbItems);
-        float[] vector = new float[10];
-        Arrays.fill(vector, 0.5f);
-        AnnoyLib.addItem(index, 32, vector);
+        File dir = Files.createTempDirectory("AnnoyLib").toFile();
+        String indexPathStr = new File(dir, "index.annoy").toString();
+        System.out.println(indexPathStr);
 
-        nbItems = AnnoyLib.getNItems(index);
-        assertEquals(1, nbItems;
-        AnnoyLib.build(index, 32);
+        for (long index : indices) {
+            assertEquals(0, AnnoyLib.getNItems(index));
 
-        nbItems = AnnoyLib.getNItems(index);
-        assertEquals(1, nbItems);
+            for (int i = 0; i < nbItems; i++) {
+                AnnoyLib.addItem(index, i, getVector(dimension, seedValue / (i + 1)));
+            }
 
-        float[] res2 = new float[10];
-        AnnoyLib.getItem(index, 32, res2);
-        for(int i = 0; i < 10; i++) {
-            assertEquals(0.00001, 0.5f, res2[i]);
-        }*/
+            assertEquals(nbItems, AnnoyLib.getNItems(index));
+            AnnoyLib.build(index, nbTrees);
+            assertEquals(nbItems, AnnoyLib.getNItems(index));
+
+            byte[] indexPath = Utils.toCharBytes(indexPathStr);
+
+            assertTrue(AnnoyLib.save(index, indexPath));
+
+            AnnoyLib.unload(index);
+
+            assertTrue(AnnoyLib.load(index, indexPath));
+
+            float[] item = new float[dimension];
+
+            for (int i = 0; i < nbItems; i++) {
+                float expectedValue = seedValue / (i + 1);
+                AnnoyLib.getItem(index, i, item);
+                for (int j = 0; j < dimension; j++) {
+                    assertEquals(expectedValue, item[j], delta);
+                }
+            }
+        }
+    }
+
+    private float[] getVector(int dimension, float value) {
+        float[] vector = new float[dimension];
+        Arrays.fill(vector, value);
+        return vector;
     }
 }
